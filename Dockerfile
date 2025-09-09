@@ -1,10 +1,7 @@
-# Alpine Linux with OpenJDK JRE
-FROM openjdk:8-jre-alpine
-
-EXPOSE 8181
-
-# copy jar into image
-COPY target/spring-petclinic-2.2.0.BUILD-SNAPSHOT.jar /usr/bin/spring-petclinic.jar
-
-# run application with this command line 
-ENTRYPOINT ["java","-jar","/usr/bin/spring-petclinic.jar","--server.port=8181"]
+# Dockerfile (place at the repository root)
+FROM eclipse-temurin:17-jdk-jammy   # Java 17 base; change if you use another JDK
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} /app.jar
+# Expose the app port (optional; used for documentation)
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app.jar"]
