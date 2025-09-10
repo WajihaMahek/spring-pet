@@ -1,10 +1,12 @@
-# Alpine Linux with OpenJDK JRE
-FROM openjdk:8-jre-alpine
+# Dockerfile (multi-stage, Java 17)
+FROM maven:3.9.0-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn -B -DskipTests package
 
-EXPOSE 8181
-
-# copy jar into image
-COPY target/spring-petclinic-2.2.0.BUILD-SNAPSHOT.jar /usr/bin/spring-petclinic.jar
-
-# run application with this command line 
-ENTRYPOINT ["java","-jar","/usr/bin/spring-petclinic.jar","--server.port=8181"]
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","/app/app.jar"]
